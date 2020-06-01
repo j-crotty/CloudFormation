@@ -1,0 +1,203 @@
+{
+
+"AWSTemplateFormatVersion": "2010-09-09",
+
+"Description": "Transit Gateway",
+
+"Parameters": {
+
+"VPCIdMgmt": {
+
+"Type": "String",
+
+"Description": "Management VPC Id",
+
+"Default": "vpc-12345678901234567"
+
+},
+
+"VPCIdProd": {
+
+"Type": "String",
+
+"Description": "Production VPC Id",
+
+"Default": "vpc-9876543210987654"
+
+},
+
+"MgmtPrivateAzASubnetId": {
+
+"Type": "String",
+
+"Description": "Az A Subnet in Mgmt VPC",
+
+"Default": "subnet-23456789012345678"
+
+},
+
+"ProdPrivateAzASubnetId": {
+
+"Type": "String",
+
+"Description": "Az A Subnet in Prod VPC",
+
+"Default": "subnet-34567890123456789"
+
+},
+
+"VPNAddress": {
+
+"Type": "String",
+
+"Description": "On-premise VPN endpoint",
+
+"Default": "201.65.1.1"
+
+}
+
+},
+
+"Resources": {
+
+"CustomerGateway": {
+
+"Type": "AWS::EC2::CustomerGateway",
+
+"Properties": {
+
+"Type": "ipsec.1",
+
+"BgpAsn": "65000",
+
+"IpAddress": {
+
+"Ref": "VPNAddress"
+
+}
+
+}
+
+},
+
+"TransitGateway": {
+
+"Type": "AWS::EC2::TransitGateway",
+
+"Properties": {
+
+"AmazonSideAsn": 65001,
+
+"DefaultRouteTableAssociation": "enable",
+
+"DefaultRouteTablePropagation": "enable",
+
+"Description": "Transit Gateway",
+
+"DnsSupport": "enable",
+
+"VpnEcmpSupport": "enable"
+
+}
+
+},
+
+"TransitGatewayMgmtAttachment": {
+
+"Type": "AWS::EC2::TransitGatewayAttachment",
+
+"Properties": {
+
+"SubnetIds": [{
+
+"Ref": "MgmtPrivateAzASubnetId"
+
+}],
+
+"TransitGatewayId": {
+
+"Ref": "TransitGateway"
+
+},
+
+"VpcId": {
+
+"Ref": "VPCIdMgmt"
+
+}
+
+}
+
+},
+
+"TransitGatewayProdAttachment": {
+
+"Type": "AWS::EC2::TransitGatewayAttachment",
+
+"Properties": {
+
+"SubnetIds": [{
+
+"Ref": "ProdPrivateAzASubnetId"
+
+}],
+
+"TransitGatewayId": {
+
+"Ref": "TransitGateway"
+
+},
+
+"VpcId": {
+
+"Ref": "VPCIdProd"
+
+}
+
+}
+
+}
+
+},
+
+"Outputs": {
+
+"CustomerGateway": {
+
+"Description": "CustomerGateway Id",
+
+"Value": {
+
+"Ref": "CustomerGateway"
+
+},
+
+"Export": {
+
+"Name": "TransitGateway-CustomerGatewayId"
+
+}
+
+},
+
+"TransitGateway": {
+
+"Description": "TransitGateway Id",
+
+"Value": {
+
+"Ref": "TransitGateway"
+
+},
+
+"Export": {
+
+"Name": "TransitGateway-TransitGatewayId"
+
+}
+
+}
+
+}
+
+}
