@@ -1,0 +1,11 @@
+Type: AWS::EC2::VPNConnection
+Properties: 
+  CustomerGatewayId: String
+  StaticRoutesOnly: Boolean
+  Tags: 
+    - Tag
+  TransitGatewayId: String
+  Type: String
+  VpnGatewayId: String
+  VpnTunnelOptionsSpecifications: 
+    - VpnTunnelOptionsSpecification
