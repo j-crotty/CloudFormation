@@ -1,0 +1,24 @@
+SGroup1:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: EC2 Instance access
+SGroup2:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: EC2 Instance access
+SGroup1Ingress:
+  Type: AWS::EC2::SecurityGroupIngress
+  Properties:
+    GroupName: !Ref SGroup1
+    IpProtocol: tcp
+    ToPort: 80
+    FromPort: 80
+    SourceSecurityGroupName: !Ref SGroup2
+SGroup2Ingress:
+  Type: AWS::EC2::SecurityGroupIngress
+  Properties:
+    GroupName: !Ref SGroup2
+    IpProtocol: tcp
+    ToPort: 80
+    FromPort: 80
+    SourceSecurityGroupName: !Ref SGroup1

@@ -1,0 +1,15 @@
+#Whenever you create a VPC, AWS automatically creates default resources for that VPC, such as a security group. However, when you define a VPC in AWS CloudFormation templates, you don't yet have the physical IDs of those default resources. To obtain the IDs, use the Fn::GetAtt intrinsic function. That way, you can use the default resources instead of creating new ones in your template. For example, the following template snippet associates the default security group of the myVPC VPC with the myInstance Amazon EC2 instance.
+myVPC:
+  Type: AWS::EC2::VPC
+  Properties:
+    CidrBlock: !Ref myVPCCIDRRange
+    EnableDnsSupport: false
+    EnableDnsHostnames: false
+    InstanceTenancy: default
+myInstance:
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: !FindInMap [ AWSRegionToAMI , !Ref 'AWS::Region', 64 ]
+    SecurityGroupIds:
+    - !GetAtt myVPC.DefaultSecurityGroup
+    SubnetId: !Ref mySubnet
