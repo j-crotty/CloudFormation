@@ -4,6 +4,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
+      KeyName: keypair
       Tags:
         - Key: Name
           Value: My EC2 Instance
