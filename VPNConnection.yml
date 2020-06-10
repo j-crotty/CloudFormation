@@ -9,3 +9,13 @@ Properties:
   VpnGatewayId: String
   VpnTunnelOptionsSpecifications: 
     - VpnTunnelOptionsSpecification
+# example
+   myVPNConnection: 
+      Type: AWS::EC2::VPNConnection
+      Properties: 
+        Type: ipsec.1
+        StaticRoutesOnly: true
+        CustomerGatewayId: 
+          !Ref myCustomerGateway
+        VpnGatewayId: 
+          !Ref myVPNGateway
