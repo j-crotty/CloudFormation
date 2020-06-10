@@ -12,7 +12,7 @@ Properties:
     Value: server1
 
 server2:
-Type: AWS::EC2::Instance
+#Type: AWS::EC2::Instance
 Properties:
   InstanceType: !Ref Server2InstanceType
   KeyName: !Ref ServerKeypair
