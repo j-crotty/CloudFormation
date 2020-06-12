@@ -1,0 +1,55 @@
+{
+
+    "AWSTemplateFormatVersion" : "2010-09-09",
+    
+    "Description" : "Multiple EC2 instances",
+    
+    "Resources" : {
+    
+    "MyEc2Instance1" : {
+    
+    "Type" : "AWS::EC2::Instance",
+    
+    "Properties" : {
+    
+    "ImageId" : "ami-04a0ee204b44cc91a",
+    
+    "KeyName" : "keypair",
+    
+    "InstanceType" : "t2.micro",
+    
+    "SecurityGroupIds" : ["sg-0fe3fdbc9f6a87312"],
+    
+    "SubnetId" : "subnet-0164d108b243b6d64",
+    
+    "Tags" : [ {"Key" : "Name", "Value" :"Instance1"} ]
+    
+    }
+    
+    },
+    
+    "MyEc2Instance2" : {
+    
+    "Type" : "AWS::EC2::Instance",
+    
+    "Properties" : {
+    
+    "ImageId" : "ami-04a0ee204b44cc91a",
+    
+    "KeyName" : "keypair",
+    
+    "InstanceType" : "t2.micro",
+    
+    "SecurityGroupIds" : ["sg-0fe3fdbc9f6a87312"],
+    
+    "SubnetId" : "subnet-0164d108b243b6d64",
+    
+    "Tags" : [ {"Key" : "Name", "Value" :"Instance2"} ]
+    
+    }
+    
+    }
+    
+    }
+    
+    }
