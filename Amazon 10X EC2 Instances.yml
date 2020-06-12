@@ -5,7 +5,7 @@ Parameters:
     Type: Number
     Default: 1
     MinValue: 1
-    MaxValue: 5
+    MaxValue: 10
     ConstraintDescription: Must be a number between 1 and 5.
   ImageId:
     Description: Image ID to launch EC2 instances.
@@ -27,6 +27,11 @@ Conditions:
   - !Equals [4, !Ref InstanceCount]
   - !Equals [5, !Ref InstanceCount]
   Launch5: !Equals [5, !Ref InstanceCount]
+  Launch6: !Equals [6, !Ref InstanceCount]
+  Launch7: !Equals [7, !Ref InstanceCount]
+  Launch8: !Equals [8, !Ref InstanceCount]
+  Launch9: !Equals [9, !Ref InstanceCount]
+  Launch10: !Equals [10, !Ref InstanceCount]
 Resources:
   Instance1:
     Condition: Launch1
@@ -54,6 +59,36 @@ Resources:
       InstanceType: !Ref InstanceType
   Instance5:
     Condition: Launch5
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance6:
+    Condition: Launch6
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance7:
+    Condition: Launch7
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance8:
+    Condition: Launch8
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance9:
+    Condition: Launch9
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance10:
+    Condition: Launch10
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Ref ImageId
