@@ -124,7 +124,7 @@ Resources:
       ApplicationName:
         Ref: SampleApplication
       Description: SSH access to Node.JS Application
-      SolutionStackName: 64bit Amazon Linux 2018.03 v4.7.1 running Node.js
+      SolutionStackName: 64bit Amazon Linux 2 v5.0.2 running Node.js 12
       OptionSettings:
         - Namespace: aws:autoscaling:launchconfiguration
           OptionName: EC2KeyName
