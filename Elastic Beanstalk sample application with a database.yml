@@ -154,7 +154,7 @@ Resources:
       ApplicationName:
         Ref: SampleApplication
       Description: Default Configuration Version 1.0
-      SolutionStackName: 64bit Amazon Linux 2018.03 v3.0.7 running Tomcat 7 Java 7
+      SolutionStackName: 64bit Amazon Linux 2 v4.0.0 running Tomcat 8.5 Corretto 11
       OptionSettings:
         - Namespace: aws:elasticbeanstalk:application:environment
           OptionName: JDBC_CONNECTION_STRING
