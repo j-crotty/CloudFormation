@@ -46,6 +46,8 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
+      SubnetId:
+        Default: 10.1.0.10
       KeyName: keypair
       Tags:
         - Key: Name
