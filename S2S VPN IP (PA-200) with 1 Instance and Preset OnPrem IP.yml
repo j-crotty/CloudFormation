@@ -41,24 +41,6 @@ Parameters:
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 Resources:
-  Ec2Instance:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: t2.micro
-      ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
-      NetworkInterfaces: 
-        - AssociatePublicIpAddress: "true"
-          DeviceIndex: "0"
-          GroupSet: 
-            - Ref: "myVPCEC2SecurityGroup"
-          SubnetId: 
-            Ref: "PublicSubnet"
-      KeyName: keypair
-      Tags:
-        - Key: Name
-          Value: My EC2 Instance
-        - Key: Type
-          Value: Worker Instance
   VPC:
     Type: 'AWS::EC2::VPC'
     Properties:
@@ -177,6 +159,24 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnet
       NetworkAclId: !Ref PrivateNetworkAcl
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "false"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: "myVPCEC2SecurityGroup"
+          SubnetId: 
+            - Ref: PrivateSubnet
+      KeyName: keypair
+      Tags:
+        - Key: Name
+          Value: My EC2 Instance
+        - Key: Type
+          Value: Worker Instance
 Outputs:
   VPCId:
     Description: VPCId of the newly created VPC
