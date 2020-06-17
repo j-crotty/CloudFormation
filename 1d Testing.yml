@@ -19,7 +19,6 @@ Resources:
       - Key: Name
         Value:  !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
 
-
   # Our VPC will need internet access:      
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -30,7 +29,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-
+e
   # Now some subnets, 2 public and 2 private:
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -137,6 +136,24 @@ Resources:
     Type: AWS::EC2::EIP
     Properties:
       Domain: VPC
+
+  # Security Group
+  VPCSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Allow RDP
+      GroupName: SecurityFruitLoops
+      #SecurityGroupEgress: 
+      #  - Egress
+      #SecurityGroupIngress: 
+      #  - IpProtocol: tcp
+      #    FromPort: 3389
+      #    ToPort: 3389
+      #    CidrIP: 0.0.0.0/0
+      #Tags: 
+      #  - Tag
+      VpcId:
+        Ref: VPC
 
   # EC2 Instance with interface attached to public subnet
   Ec2Instance:
