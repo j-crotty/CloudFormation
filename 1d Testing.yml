@@ -29,7 +29,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-e
+
   # Now some subnets, 2 public and 2 private:
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -152,8 +152,7 @@ e
       #    CidrIP: 0.0.0.0/0
       #Tags: 
       #  - Tag
-      VpcId:
-        Ref: VPC
+      VpcId: !Ref: VPC
 
   # EC2 Instance with interface attached to public subnet
   Ec2Instance:
