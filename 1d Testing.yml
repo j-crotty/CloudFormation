@@ -29,7 +29,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-e
+
   # Now some subnets, 2 public and 2 private:
   PublicSubnetA:
     Type: AWS::EC2::Subnet
@@ -145,11 +145,11 @@ e
       GroupName: SecurityFruitLoops
       #SecurityGroupEgress: 
       #  - Egress
-      #SecurityGroupIngress: 
-      #  - IpProtocol: tcp
-      #    FromPort: 3389
-      #    ToPort: 3389
-      #    CidrIP: 0.0.0.0/0
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 0.0.0.0/0
       #Tags: 
       #  - Tag
       VpcId:
