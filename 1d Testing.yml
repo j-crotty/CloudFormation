@@ -158,6 +158,11 @@ Resources:
           FromPort: 3389
           ToPort: 3389
           CidrIp: 0.0.0.0/0
+      SecurityGroupIngress: 
+        - IpProtocol: icmp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: 0.0.0.0/0
       #Tags: 
       #  - Tag
       VpcId: !Ref VPC
@@ -180,6 +185,25 @@ Resources:
             - Ref: "VPCSecurityGroup"
           SubnetId: 
             Ref: "PublicSubnetA"
+  # EC2 Instance with interface attached to private subnet
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
+      KeyName: keypair
+      Tags:
+        - Key: Name
+          Value: My EC2 Instance
+        - Key: Type
+          Value: Worker Instance
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - Ref: "VPCSecurityGroup"
+          SubnetId: 
+            Ref: "PrivateSubnetA"
   # S3 Bucket
   MyS3Bucket:
     Type: AWS::S3::Bucket
