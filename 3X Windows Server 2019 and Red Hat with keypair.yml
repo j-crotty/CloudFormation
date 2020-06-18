@@ -31,3 +31,13 @@ Resources:
           Value: Server3
         - Key: Type
           Value: Worker Instance
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-098f16afa9edf40be # Amazon Red Hat AMI in N.Virginia
+      Tags:
+        - Key: Name
+          Value: Server3
+        - Key: Type
+          Value: Worker Instance
