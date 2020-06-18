@@ -11,7 +11,7 @@ Parameters:
     Description: IP Address of your VPN device
     MinLength: '7'
     MaxLength: '15'
-    Default: 24.4.23.33
+    Default: 65.19.136.155
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})'
     ConstraintDescription: must be a valid IP address of the form x.x.x.x
   OnPremiseCIDR:
