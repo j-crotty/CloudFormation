@@ -152,7 +152,7 @@ Resources:
       #    CidrIP: 0.0.0.0/0
       #Tags: 
       #  - Tag
-      VpcId: !Ref: VPC
+      VpcId: !Ref VPC
 
   # EC2 Instance with interface attached to public subnet
   Ec2Instance:
@@ -160,7 +160,7 @@ Resources:
     Properties:
       InstanceType: t2.micro
       ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
-      KeyName: keypair
+      KeyName: keypair1
       Tags:
         - Key: Name
           Value: My EC2 Instance
