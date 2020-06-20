@@ -151,17 +151,16 @@ Resources:
     Properties: 
       GroupDescription: Allow RDP
       GroupName: SecurityFruitLoops
-      #SecurityGroupEgress: 
-      #  - Egress
+      #SecurityGroupIngress: 
+      #  - Ingress
       SecurityGroupIngress: 
         - IpProtocol: tcp
           FromPort: 3389
           ToPort: 3389
           CidrIp: 0.0.0.0/0
-      SecurityGroupIngress: 
         - IpProtocol: icmp
-          FromPort: 0
-          ToPort: 65535
+          FromPort: -1
+          ToPort: -1
           CidrIp: 0.0.0.0/0
       #Tags: 
       #  - Tag
@@ -245,4 +244,4 @@ Resources:
     Type: 'AWS::EC2::VPNConnectionRoute'
     Properties:
       VpnConnectionId: !Ref VPNConnection
-      DestinationCidrBlock: !Ref OnPremiseCIDR
+      DestinationCidrBlock: !Ref VPC
