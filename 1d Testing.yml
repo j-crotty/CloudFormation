@@ -6,6 +6,41 @@ AWSTemplateFormatVersion: 2010-09-09
 # The VPC and subnets are exported for use by other stacks.
 
 Parameters:
+  VPCCIDR:
+    Type: String
+    Description: IP Address range for the VPN connected VPC
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.0.0/16
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PublicSubnetACIDR:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.0.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+  PublicSubnetBCIDR:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.20.0/24
+  PrivateSubnetACIDR:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.50.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PrivateSubnetBCIDR:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.60.0/24
   VPNAddress:
     Type: String
     Description: IP Address of your VPN device
@@ -22,12 +57,38 @@ Parameters:
     Default: 192.168.1.0/24
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  InstanceCount:
+    Description: Number of EC2 instances (must be between 1 and 5).
+    Type: Number
+    Default: 1
+    MinValue: 1
+    MaxValue: 5
+    ConstraintDescription: Must be a number between 1 and 5.
+  ImageId:
+    Description: Image ID to launch EC2 instances.
+    Type: AWS::EC2::Image::Id
+    Default: ami-04a0ee204b44cc91a
+  InstanceType:
+    Description: Instance type to launch EC2 instances.
+    Type: String
+    Default: t2.micro
+    AllowedValues: [ t2.micro ]
+Conditions:
+  Launch1: !Equals [1, 1]
+  Launch2: !Not [!Equals [1, !Ref InstanceCount]]
+  Launch3: !And
+  - !Not [!Equals [1, !Ref InstanceCount]]
+  - !Not [!Equals [2, !Ref InstanceCount]]
+  Launch4: !Or
+  - !Equals [4, !Ref InstanceCount]
+  - !Equals [5, !Ref InstanceCount]
+  Launch5: !Equals [5, !Ref InstanceCount]
 Resources:
   # First, a VPC:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.1.0.0/16
+      CidrBlock: !Ref VPCCIDR
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -43,12 +104,60 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
+    # A NAT Gateway: 
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties: 
+      AllocationId: !GetAtt ElasticIPAddress.AllocationId
+      SubnetId: !Ref PublicSubnetA
+      Tags: 
+      - Key: Name
+        Value: !Sub NAT-${AWS::StackName}
+    # VPN Gateway
+  VPNGateway:
+    Type: 'AWS::EC2::VPNGateway'
+    Properties:
+      Type: ipsec.1
+      Tags:
+        - Key: Application
+          Value: !Ref 'AWS::StackName'
+  VPNGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      VpnGatewayId: !Ref VPNGateway
+  CustomerGateway:
+    Type: 'AWS::EC2::CustomerGateway'
+    Properties:
+      Type: ipsec.1
+      BgpAsn: '65000'
+      IpAddress: !Ref VPNAddress
+      Tags:
+        - Key: Application
+          Value: !Ref 'AWS::StackName'
+        - Key: VPN
+          Value: !Join 
+            - ''
+            - - 'Gateway to '
+              - !Ref VPNAddress
+  VPNConnection:
+    Type: 'AWS::EC2::VPNConnection'
+    Properties:
+      Type: ipsec.1
+      StaticRoutesOnly: 'true'
+      CustomerGatewayId: !Ref CustomerGateway
+      VpnGatewayId: !Ref VPNGateway
+  VPNConnectionRoute:
+    Type: 'AWS::EC2::VPNConnectionRoute'
+    Properties:
+      VpnConnectionId: !Ref VPNConnection
+      DestinationCidrBlock: !Ref OnPremiseCIDR
   # Now some subnets, 2 public and 2 private:
   PublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: 10.1.10.0/24
+      CidrBlock: !Ref PublicSubnetACIDR
       AvailabilityZone: !Select [ 0, !GetAZs ]    # Get the first AZ in the list        
       Tags:
       - Key: Name
@@ -57,7 +166,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: 10.1.20.0/24
+      CidrBlock: !Ref PublicSubnetBCIDR
       AvailabilityZone: !Select [ 1, !GetAZs ]    # Get the second AZ in the list  
       Tags:
       - Key: Name
@@ -66,7 +175,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: 10.1.50.0/24
+      CidrBlock: !Ref PrivateSubnetACIDR
       AvailabilityZone: !Select [ 0, !GetAZs ]    # Get the first AZ in the list  
       Tags:
       - Key: Name
@@ -75,7 +184,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      CidrBlock: 10.1.60.0/24
+      CidrBlock: !Ref PrivateSubnetBCIDR
       AvailabilityZone: !Select [ 1, !GetAZs ]    # Get the second AZ in the list  
       Tags:
       - Key: Name
@@ -132,15 +241,6 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetB
       RouteTableId: !Ref PrivateRouteTable
-  # A NAT Gateway: 
-  NATGateway:
-    Type: AWS::EC2::NatGateway
-    Properties: 
-      AllocationId: !GetAtt ElasticIPAddress.AllocationId
-      SubnetId: !Ref PublicSubnetA
-      Tags: 
-      - Key: Name
-        Value: !Sub NAT-${AWS::StackName}
   ElasticIPAddress:
     Type: AWS::EC2::EIP
     Properties:
@@ -184,64 +284,36 @@ Resources:
             - Ref: "VPCSecurityGroup"
           SubnetId: 
             Ref: "PublicSubnetA"
-  # EC2 Instance with interface attached to private subnet
-  Ec2Instance:
+  Instance1:
+    Condition: Launch1
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
-      ImageId: ami-04a0ee204b44cc91a # Amazon Windows AMI in N.Virginia
-      KeyName: keypair
-      Tags:
-        - Key: Name
-          Value: My EC2 Instance
-        - Key: Type
-          Value: Worker Instance
-      NetworkInterfaces: 
-        - AssociatePublicIpAddress: "true"
-          DeviceIndex: "0"
-          GroupSet: 
-            - Ref: "VPCSecurityGroup"
-          SubnetId: 
-            Ref: "PrivateSubnetA"
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance2:
+    Condition: Launch2
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance3:
+    Condition: Launch3
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance4:
+    Condition: Launch4
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+  Instance5:
+    Condition: Launch5
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
   # S3 Bucket
   MyS3Bucket:
     Type: AWS::S3::Bucket
-  # VPN Gateway
-  VPNGateway:
-    Type: 'AWS::EC2::VPNGateway'
-    Properties:
-      Type: ipsec.1
-      Tags:
-        - Key: Application
-          Value: !Ref 'AWS::StackName'
-  VPNGatewayAttachment:
-    Type: 'AWS::EC2::VPCGatewayAttachment'
-    Properties:
-      VpcId: !Ref VPC
-      VpnGatewayId: !Ref VPNGateway
-  CustomerGateway:
-    Type: 'AWS::EC2::CustomerGateway'
-    Properties:
-      Type: ipsec.1
-      BgpAsn: '65000'
-      IpAddress: !Ref VPNAddress
-      Tags:
-        - Key: Application
-          Value: !Ref 'AWS::StackName'
-        - Key: VPN
-          Value: !Join 
-            - ''
-            - - 'Gateway to '
-              - !Ref VPNAddress
-  VPNConnection:
-    Type: 'AWS::EC2::VPNConnection'
-    Properties:
-      Type: ipsec.1
-      StaticRoutesOnly: 'true'
-      CustomerGatewayId: !Ref CustomerGateway
-      VpnGatewayId: !Ref VPNGateway
-  VPNConnectionRoute:
-    Type: 'AWS::EC2::VPNConnectionRoute'
-    Properties:
-      VpnConnectionId: !Ref VPNConnection
-      DestinationCidrBlock: !Ref VPC
