@@ -144,7 +144,7 @@ Resources:
     Type: 'AWS::EC2::VPNConnection'
     Properties:
       Type: ipsec.1
-      StaticRoutesOnly: 'true'
+      StaticRoutesOnly: 'false'
       CustomerGatewayId: !Ref CustomerGateway
       VpnGatewayId: !Ref VPNGateway
   VPNConnectionRoute:
