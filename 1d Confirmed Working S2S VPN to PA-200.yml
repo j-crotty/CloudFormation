@@ -245,8 +245,8 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable
   VPNGatewayRoutePropogration:
     Type: AWS::EC2::VPNGatewayRoutePropagation
-    Properties:
     DependsOn: VPNGatewayAttachment
+    Properties:
        RouteTableIds: 
         - !Ref PublicRouteTable
        VpnGatewayId: !Ref VPNGateway
