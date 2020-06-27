@@ -50,7 +50,7 @@ Parameters:
     Description: IP Address of your VPN device
     MinLength: '7'
     MaxLength: '15'
-    Default: 65.19.136.155
+    Default: 65.19.136.154
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})'
     ConstraintDescription: must be a valid IP address of the form x.x.x.x
   OnPremiseCIDR:
@@ -59,6 +59,67 @@ Parameters:
     MinLength: '9'
     MaxLength: '18'
     Default: 192.168.1.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+  VPCCIDR2:
+    Type: String
+    Description: IP Address range for the VPN connected VPC
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.0.0/16
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PublicSubnetACIDR2:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.1.10.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+  VPNAddress2:
+    Type: String
+    Description: IP Address of your VPN device
+    MinLength: '7'
+    MaxLength: '15'
+    Default: 67.160.198.181
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})'
+    ConstraintDescription: must be a valid IP address of the form x.x.x.x
+  OnPremiseCIDR2:
+    Type: String
+    Description: IP Address range for your existing infrastructure
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 192.168.10.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  VPCCIDR3:
+    Type: String
+    Description: IP Address range for the VPN connected VPC
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.2.0.0/16
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+  PublicSubnetACIDR3:
+    Type: String
+    Description: IP Address range for the VPN connected Subnet
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 10.2.20.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+  VPNAddress3:
+    Type: String
+    Description: IP Address of your VPN device
+    MinLength: '7'
+    MaxLength: '15'
+    Default: 65.19.136.154
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})'
+    ConstraintDescription: must be a valid IP address of the form x.x.x.x
+  OnPremiseCIDR3:
+    Type: String
+    Description: IP Address range for your existing infrastructure
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 192.168.20.0/24
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
   InstanceCount:
@@ -98,6 +159,24 @@ Resources:
       Tags:
       - Key: Name
         Value:  !Join ['', [!Ref "AWS::StackName", "-VPC" ]]
+  VPC2:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR2
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value:  !Join ['', [!Ref "AWS::StackName", "-VPC2" ]]
+  VPC3:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCIDR3
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value:  !Join ['', [!Ref "AWS::StackName", "-VPC3" ]]
   # Our VPC will need internet access:      
   InternetGateway:
     Type: AWS::EC2::InternetGateway
